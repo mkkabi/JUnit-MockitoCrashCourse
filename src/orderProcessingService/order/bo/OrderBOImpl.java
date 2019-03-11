@@ -14,17 +14,18 @@ public class OrderBOImpl implements OrderBO {
 	public OrderDAO getDao() {
 		return dao;
 	}
-	
-	public void setDao(OrderDAO o){
+
+	public void setDao(OrderDAO o) {
 		this.dao = o;
 	}
-	
+
 	@Override
 	public boolean placeOrder(Order order) throws BOException {
 		try {
 			int result = dao.create(order);
-			if (result == 0)
+			if (result == 0) {
 				return false;
+			}
 		} catch (SQLException e) {
 			throw new BOException(e);
 		}
@@ -33,12 +34,31 @@ public class OrderBOImpl implements OrderBO {
 
 	@Override
 	public boolean cancelOrder(int id) throws BOException {
-		return false;
+		try {
+			Order order = dao.read(id);
+			order.setStatus("cancel");
+			int result = dao.update(order);
+			if (result == 0) {
+				return false;
+			}
+		} catch (SQLException e) {
+			throw new BOException(e);
+		}
+
+		return true;
 	}
 
 	@Override
 	public boolean deleteOrder(int id) throws BOException {
-		return false;
+		try {
+			int result = dao.delete(id);
+			if (result == 0) {
+				return false;
+			}
+		} catch (SQLException e) {
+			throw new BOException(e);
+		}
+		return true;
 	}
 
 }
